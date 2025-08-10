@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import dash_logo from "../../assets/images/logo.png";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { base_url } from "../../config/config";
 import axios from "axios";
 import toas from "react-hot-toast";
+import { storeContext } from "../../context/storeContext";
 
 const Login = () => {
   const [state, setState] = useState({ email: "", password: "" });
   const [loader, setLoader] = useState(false);
+  const { dispatch } = useContext(storeContext);
+  const navigate = useNavigate();
 
   const inputHandle = (e) => {
     setState({ ...state, [e.target.name]: e.target.value });
@@ -16,10 +19,21 @@ const Login = () => {
   const submit = async (e) => {
     e.preventDefault();
     try {
+      setLoader(true);
       const { data } = await axios.post(`${base_url}/api/v1/login`, state);
-      console.log("data result : ", data);
+      setLoader(false);
+      localStorage.setItem("newsToken", data.token);
+      toas.success(data.message);
+      dispatch({
+        type: "login_succefull",
+        payload: {
+          token: data.token,
+        },
+      });
+      navigate("/dashboard");
     } catch (error) {
-      console.log(error);
+      setLoader(false);
+      toas.error(error.reponse.data.message);
     }
   };
 
@@ -64,7 +78,7 @@ const Login = () => {
           </div>
 
           <button className="bg-blue-500 cursor-pointer text-center w-full rounded-sm text-white px-3 py-2 hover:bg-blue-600">
-            Login
+            {loader === true ? "loading..." : "Login"}
           </button>
         </form>
       </div>

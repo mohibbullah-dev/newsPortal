@@ -1,16 +1,17 @@
-import React from "react";
-import MainLayout from "../dashboard/layouts/MainLayout";
+import React, { useContext } from "react";
 import { Outlet, Navigate } from "react-router";
+import { storeContext } from "../context/storeContext";
 
 const ProjectDashboard = () => {
-  const userInfo = {
-    name: "mohib",
-    role: ["admin", "writer"],
-  };
+  const { store } = useContext(storeContext);
+  console.log("store result: ", store);
 
-  if (userInfo.role.includes("admin")) {
-    return <Outlet />;
-  } else if (userInfo.role.includes("writer")) {
+  // const userInfo = {
+  //   name: "mohib",
+  //   role: ["admin", "writer"],
+  // };
+
+  if (store.userInfo) {
     return <Outlet />;
   } else {
     return <Navigate to="/Login" />;
