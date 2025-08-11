@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import dash_logo from "../../assets/images/logo.png";
 
 import { RxDashboard } from "react-icons/rx";
@@ -6,15 +6,12 @@ import { RiNewsLine } from "react-icons/ri";
 import { IoMdAdd } from "react-icons/io";
 import { TfiWrite } from "react-icons/tfi";
 import { CgProfile } from "react-icons/cg";
-import { RiLogoutCircleRLine } from "react-icons/ri";
-
 import { Link, useLocation } from "react-router";
-
-const userInfo = {
-  role: "writer",
-};
+import { storeContext } from "../../context/storeContext";
 
 const Sidebar = () => {
+  const { store } = useContext(storeContext);
+
   const { pathname } = useLocation();
   return (
     <div className="w-[250px] px-3 h-screen bg-white fixed left-0 top-0">
@@ -25,7 +22,7 @@ const Sidebar = () => {
       </div>
 
       <ul className="flex flex-col gap-y-1 font-medium">
-        {userInfo.role === "admin" ? (
+        {store.userInfo?.role === "admin" ? (
           <>
             <li>
               <Link
@@ -34,7 +31,7 @@ const Sidebar = () => {
                   pathname === "/dashboard/admin"
                     ? "bg-indigo-500 text-white"
                     : "bg-white text-[#404040f6]"
-                } py-2 hover:shadow-lg hover:shadow-indigo-500/20 w-full rounded-sm flex gap-x-2 justify-start items-center bg-indigo-500 hover:text-white`}
+                } py-2 hover:shadow-lg hover:shadow-indigo-500/20 w-full rounded-sm flex gap-x-2 justify-start items-center hover:bg-indigo-500 hover:text-white`}
               >
                 <span className="text-xl">
                   <RxDashboard />

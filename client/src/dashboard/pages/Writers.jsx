@@ -2,7 +2,36 @@ import React from "react";
 import profile from "../../assets/images/profile.jpg";
 import { Link } from "react-router";
 import { IoMdEye } from "react-icons/io";
+import axios from "axios";
+import { base_url } from "../../config/config";
+import { useContext } from "react";
+import { storeContext } from "../../context/storeContext";
+import { useEffect } from "react";
+import { useState } from "react";
+
 const Writers = () => {
+  const { store } = useContext(storeContext);
+  const [writers, setWriters] = useState([]);
+  console.log(typeof writers);
+  console.log(writers);
+
+  const getWriters = async () => {
+    try {
+      const { data } = await axios.get(`${base_url}/api/v1/writer`, {
+        headers: {
+          Authorization: `Bearer ${store.token}`,
+        },
+      });
+
+      setWriters(data.writers);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getWriters();
+  }, []);
+
   return (
     <div className="p-4 bg-white rounded-md">
       <div className="flex justify-between">
@@ -30,19 +59,19 @@ const Writers = () => {
           </thead>
 
           <tbody className="p-[100px]">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n, i) => (
+            {writers.map((writer, i) => (
               <tr key={i} className="border-b border-gray-100">
                 <td className="py-6 px-3">
                   <span>{i + 1}</span>
                 </td>
                 <td className="py-6 px-3">
-                  <span>Mohibullah</span>
+                  <span>{writer.name}</span>
                 </td>
                 <td className="py-6">
-                  <span>Education</span>
+                  <span>{writer.category}</span>
                 </td>
                 <td className="py-6">
-                  <span className="capitalize">Writer</span>
+                  <span className="capitalize">{writer.role}</span>
                 </td>
                 <td className="py-6">
                   <img
@@ -52,7 +81,7 @@ const Writers = () => {
                   />
                 </td>
                 <td className="py-6">
-                  <span>mohibbullahn@gmail.com</span>
+                  <span>{writer.email}</span>
                 </td>
 
                 <td className="py-6">

@@ -1,13 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Navigate, Outlet } from "react-router";
+import { storeContext } from "../context/storeContext";
 
 const ProtectRolo = ({ role }) => {
-  const userInfo = {
-    name: "mohib",
-    role: "writer",
-  };
+  const { store } = useContext(storeContext);
 
-  if (userInfo.role == role) {
+  if (store.userInfo?.role == role) {
     return <Outlet />;
   } else {
     return <Navigate to="/dashboard/access-unable" />;

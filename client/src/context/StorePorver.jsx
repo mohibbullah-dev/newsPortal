@@ -5,8 +5,8 @@ import decodeTOken from "../dashboard/utils/decodeToken";
 
 const StorePorver = ({ children }) => {
   const [store, dispatch] = useReducer(storeReducer, {
-    userInfo: decodeTOken(localStorage.getItem("newsToken")),
-    token: "",
+    userInfo: decodeTOken(localStorage.getItem("newsToken") || null),
+    token: localStorage.getItem("newsToken") || "",
   });
   return (
     <storeContext.Provider value={{ store, dispatch }}>
