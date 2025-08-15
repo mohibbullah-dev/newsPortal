@@ -22,8 +22,10 @@ app.use(cookieParser());
 
 // route starts
 import authRouter from "./routes/authRoute.js";
+import newsRouter from "./routes/newsCreateRoute.js";
 
 app.use("/api/v1/", authRouter);
+app.use("/api/v1/", newsRouter);
 // route ends
 
 const serverStart = async () => {

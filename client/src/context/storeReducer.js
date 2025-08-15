@@ -24,6 +24,14 @@ const storeReducer = (state, action) => {
     };
   }
 
+  if (type === "logout") {
+    return {
+      ...state,
+      token: "",
+      payload: "",
+    };
+  }
+
   return state;
 };
 

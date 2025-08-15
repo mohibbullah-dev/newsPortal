@@ -21,10 +21,9 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<ProjectDashboard />}>
-
           <Route path="" element={<MainLayout />}>
             <Route path="" element={<Navigate to="/dashboard/admin" />} />
-            
+
             <Route path="" element={<ProtectRolo role="admin" />}>
               <Route path="admin" element={<AdminIndex />} />
               <Route path="writer/add" element={<AddWriter />} />

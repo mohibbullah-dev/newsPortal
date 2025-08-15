@@ -33,7 +33,7 @@ const Login = () => {
       navigate("/dashboard");
     } catch (error) {
       setLoader(false);
-      toas.error(error.reponse.data.message);
+      toas.error(error.response.data.message);
     }
   };
 

@@ -1,18 +1,27 @@
 import React, { useContext } from "react";
 import dash_logo from "../../assets/images/logo.png";
-
 import { RxDashboard } from "react-icons/rx";
 import { RiNewsLine } from "react-icons/ri";
 import { IoMdAdd } from "react-icons/io";
 import { TfiWrite } from "react-icons/tfi";
 import { CgProfile } from "react-icons/cg";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { storeContext } from "../../context/storeContext";
+import { IoMdLogOut } from "react-icons/io";
 
 const Sidebar = () => {
-  const { store } = useContext(storeContext);
-
+  const { store, dispatch } = useContext(storeContext);
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  const logoutHandler = () => {
+    localStorage.removeItem("newsToken");
+    dispatch({
+      type: "logout",
+      payload: "",
+    });
+    navigate("/login");
+  };
   return (
     <div className="w-[250px] px-3 h-screen bg-white fixed left-0 top-0">
       <div className="h-[70px] flex justify-center items-center">
@@ -81,7 +90,7 @@ const Sidebar = () => {
                   pathname === "/dashboard/writer"
                     ? "bg-indigo-500 text-white"
                     : "bg-white text-[#404040f6]"
-                } py-2 hover:shadow-lg hover:shadow-indigo-500/20 w-full rounded-sm flex gap-x-2 justify-start items-center bg-indigo-500 hover:text-white`}
+                } py-2 hover:shadow-lg hover:shadow-indigo-500/20 w-full rounded-sm flex gap-x-2 justify-start items-center hover:bg-indigo-500 hover:text-white`}
               >
                 <span className="text-xl">
                   <RxDashboard />
@@ -136,6 +145,18 @@ const Sidebar = () => {
               <CgProfile />
             </span>
             <span>profile</span>
+          </Link>
+        </li>
+
+        <li onClick={logoutHandler}>
+          <Link
+            to="/dashboard/logout"
+            className={`px-3 py-2 hover:shadow-lg hover:shadow-indigo-500/20 w-full rounded-sm flex gap-x-2 justify-start items-center hover:bg-red-500 hover:text-white`}
+          >
+            <span className="text-xl">
+              <IoMdLogOut />
+            </span>
+            <span>Log-out</span>
           </Link>
         </li>
       </ul>
