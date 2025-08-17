@@ -184,6 +184,19 @@ const newsCreate = async (req, res) => {
   return res.status(200).json({ message: "api is working perfectly" });
 };
 
+const getNews = async (req, res) => {
+  const { id, role } = req.userInfo;
+  if (role === "admin") {
+    const data = await News.find().sort({ createdAt: -1 });
+    return res.status(200).json({ message: "all news data for admin", data });
+  } else {
+    const data = await News.find({ writerId: id }).sort({ createdAt: -1 });
+    return res
+      .status(200)
+      .json({ message: "all news data for created by writer", data });
+  }
+};
+
 const getGelleries = async (req, res) => {
   const { id } = req.userInfo;
 
@@ -244,4 +257,4 @@ const addGellery = async (req, res) => {
   }
 };
 
-export { newsCreate, addGellery, getGelleries };
+export { newsCreate, getNews, addGellery, getGelleries };

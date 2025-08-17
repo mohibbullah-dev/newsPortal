@@ -1,25 +1,89 @@
 import profile from "../../assets/images/profile.jpg";
 import { Link, Links } from "react-router";
 import { IoMdEye } from "react-icons/io";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdViewSidebar } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
 import { RiArrowLeftSLine } from "react-icons/ri";
 import { RiArrowRightSLine } from "react-icons/ri";
+import axios from "axios";
+import { useEffect } from "react";
+import { useContext } from "react";
+import { storeContext } from "../../context/storeContext";
+import { base_url } from "../../config/config";
+import { useState } from "react";
+import { convert } from "html-to-text";
+
 const NewsContent = () => {
+  const [news, setAllNews] = useState([]);
+  const [allNews_data, setAllNews_data] = useState([]);
+  const [parPage, setParPage] = useState(5);
+  const [pages, setPages] = useState(0);
+  const [page, setPage] = useState(1);
+
+  const { store } = useContext(storeContext);
+  const getNews = async () => {
+    try {
+      const { data } = await axios.get(`${base_url}/api/v1/get-all-news`, {
+        headers: { Authorization: `Bearer ${store.token}` },
+      });
+
+      setAllNews(data.data);
+      setAllNews_data(data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getNews();
+  }, []);
+
+  useEffect(() => {
+    if (news.length > 0) {
+      const culculatedPages = Math.ceil(news.length / parPage);
+      setPages(culculatedPages);
+    }
+  }, [news, parPage]);
+
+  const serch_news = (e) => {
+    const tempNews = allNews_data.filter(
+      (n) => n.title.toLowerCase().indexOf(e.target.value.toLowerCase()) > -1
+    );
+    setAllNews(tempNews);
+    setPage(1);
+    setParPage(5);
+  };
+
+  const type_filter = (e) => {
+    const tempNews = allNews_data.filter((n) => n.status === e.target.value);
+
+    if (e.target.value === "") {
+      setAllNews(allNews_data);
+      setPage(1);
+      setParPage(5);
+    } else {
+      setAllNews(tempNews);
+      setPage(1);
+      setParPage(5);
+    }
+  };
+
   return (
     <div className=" p-4">
       <div className="flex gap-x-3">
         <select
+          onChange={type_filter}
           className="outline-none border px-3 py-2 rounded-sm border-gray-200 focus:border-indigo-200"
           name=""
           id=""
         >
           <option value="">---Select type---</option>
           <option value="pending">Pending</option>
-          <option value="active">Active</option>
+          <option value="published">Published</option>
           <option value="deactive">Deactive</option>
         </select>
         <input
+          onChange={serch_news}
           className="outline-none border px-3 py-2 rounded-sm border-gray-200 focus:border-indigo-200"
           type="text"
           name=""
@@ -32,6 +96,7 @@ const NewsContent = () => {
         <table className="w-full text-start">
           <thead className="">
             <tr className="uppercase">
+              <th className="text-start px-3">No</th>
               <th className="text-start px-3">Title</th>
               <th className="text-start">Image</th>
               <th className="text-start">category</th>
@@ -43,159 +108,52 @@ const NewsContent = () => {
           </thead>
 
           <tbody className="p-[100px]">
-            <tr className="border-b border-gray-100">
-              <td className="py-6 px-3">
-                <span>Top Web Design Trends of 2025:</span>
-              </td>
-              <td className="py-6">
-                <img
-                  className="w-[50px] h-[50px] object-cover object-top"
-                  src={profile}
-                  alt=""
-                />
-              </td>
-              <td className="py-6">
-                <span className="capitalize">traval</span>
-              </td>
-              <td className="py-6">
-                <span>You all must have wa...</span>
-              </td>
-              <td className="py-6">
-                <span>Octover 10, 2023</span>
-              </td>
-              <td className="py-6">
-                <span className="bg-green-100 px-[4px] py-[2px] rounded-2xl">
-                  active
-                </span>
-              </td>
-              <td className="py-6">
-                <Link className="bg-green-500 float-left text-white p-1.5 rounded-md hover:bg-green-600">
-                  <IoMdEye />
-                </Link>
-                <Link className="bg-yellow-500 ml-3 float-left text-white p-1.5 rounded-md hover:bg-yellow-600">
-                  <FiEdit />
-                </Link>
-                <Link className="bg-red-500 ml-3 float-left text-white p-1.5 rounded-md hover:bg-red-600">
-                  <MdDelete />
-                </Link>
-              </td>
-            </tr>
-
-            <tr className="border-b border-gray-100 ">
-              <td className="py-6 px-3">
-                <span>Top Web Design Trends of 2025:</span>
-              </td>
-              <td className="py-6">
-                <img
-                  className="w-[50px] h-[50px] object-cover object-top"
-                  src={profile}
-                  alt=""
-                />
-              </td>
-              <td className="py-6">
-                <span className="capitalize">traval</span>
-              </td>
-              <td className="py-6">
-                <span>You all must have wa...</span>
-              </td>
-              <td className="py-6">
-                <span>Octover 10, 2023</span>
-              </td>
-              <td className="py-6">
-                <span className="bg-green-100 px-[4px] py-[2px] rounded-2xl">
-                  Deactive
-                </span>
-              </td>
-
-              <td className="py-6">
-                <Link className="bg-green-500 float-left text-white p-1.5 rounded-md hover:bg-green-600">
-                  <IoMdEye />
-                </Link>
-                <Link className="bg-yellow-500 ml-3 float-left text-white p-1.5 rounded-md hover:bg-yellow-600">
-                  <FiEdit />
-                </Link>
-                <Link className="bg-red-500 ml-3 float-left text-white p-1.5 rounded-md hover:bg-red-600">
-                  <MdDelete />
-                </Link>
-              </td>
-            </tr>
-            <tr className="border-b border-gray-100 ">
-              <td className="py-6 px-3">
-                <span>Top Web Design Trends of 2025:</span>
-              </td>
-              <td className="py-6">
-                <img
-                  className="w-[50px] h-[50px] object-cover object-top"
-                  src={profile}
-                  alt=""
-                />
-              </td>
-              <td className="py-6">
-                <span className="capitalize">traval</span>
-              </td>
-              <td className="py-6">
-                <span>You all must have wa...</span>
-              </td>
-              <td className="py-6">
-                <span>Octover 10, 2023</span>
-              </td>
-              <td className="py-6">
-                <span className="bg-green-100 px-[4px] py-[2px] rounded-2xl">
-                  Deactive
-                </span>
-              </td>
-
-              <td className="py-6">
-                <Link className="bg-green-500 float-left text-white p-1.5 rounded-md hover:bg-green-600">
-                  <IoMdEye />
-                </Link>
-                <Link className="bg-yellow-500 ml-3 float-left text-white p-1.5 rounded-md hover:bg-yellow-600">
-                  <FiEdit />
-                </Link>
-                <Link className="bg-red-500 ml-3 float-left text-white p-1.5 rounded-md hover:bg-red-600">
-                  <MdDelete />
-                </Link>
-              </td>
-            </tr>
-
-            <tr className="border-b border-gray-100 ">
-              <td className="py-6 px-3">
-                <span>Top Web Design Trends of 2025:</span>
-              </td>
-              <td className="py-6">
-                <img
-                  className="w-[50px] h-[50px] object-cover object-top"
-                  src={profile}
-                  alt=""
-                />
-              </td>
-              <td className="py-6">
-                <span className="capitalize">traval</span>
-              </td>
-              <td className="py-6">
-                <span>You all must have wa...</span>
-              </td>
-              <td className="py-6">
-                <span>Octover 10, 2023</span>
-              </td>
-              <td className="py-6">
-                <span className="bg-green-100 px-[4px] py-[2px] rounded-2xl">
-                  Deactive
-                </span>
-              </td>
-
-              <td className="py-6">
-                <Link className="bg-green-500 float-left text-white p-1.5 rounded-md hover:bg-green-600">
-                  <IoMdEye />
-                </Link>
-                <Link className="bg-yellow-500 ml-3 float-left text-white p-1.5 rounded-md hover:bg-yellow-600">
-                  <FiEdit />
-                </Link>
-                <Link className="bg-red-500 ml-3 float-left text-white p-1.5 rounded-md hover:bg-red-600">
-                  <MdDelete />
-                </Link>
-              </td>
-            </tr>
+            {news.length > 0 &&
+              news.slice((page - 1) * parPage, page * parPage).map((n, i) => (
+                <tr key={i} className="border-b border-gray-100">
+                  <td className="py-6 px-3">
+                    <span>{i + 1}</span>
+                  </td>
+                  <td className="py-6 px-3">
+                    <span>{n.title.slice(0, 15)}...</span>
+                  </td>
+                  <td className="py-6">
+                    <img
+                      className="w-[50px] h-[50px] object-cover object-top"
+                      src={n.image?.url || profile}
+                      alt=""
+                    />
+                  </td>
+                  <td className="py-6">
+                    <span className="capitalize">{n.category}</span>
+                  </td>
+                  <td className="py-6">
+                    <span>{convert(n.description).slice(0, 25)}...</span>
+                  </td>
+                  <td className="py-6">
+                    <span>{n.date}</span>
+                  </td>
+                  <td className="py-6">
+                    <span className="bg-green-100 px-[4px] py-[2px] rounded-2xl">
+                      {n.status}
+                    </span>
+                  </td>
+                  <td className="py-6">
+                    <Link className="bg-green-500 float-left text-white p-1.5 rounded-md hover:bg-green-600">
+                      <IoMdEye />
+                    </Link>
+                    <Link
+                      to={`/dashboard/news/edit/${n._id}`}
+                      className="bg-yellow-500 ml-3 float-left text-white p-1.5 rounded-md hover:bg-yellow-600"
+                    >
+                      <FiEdit />
+                    </Link>
+                    <Link className="bg-red-500 ml-3 float-left text-white p-1.5 rounded-md hover:bg-red-600">
+                      <MdDelete />
+                    </Link>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
@@ -204,22 +162,39 @@ const NewsContent = () => {
         <div className="flex items-center justify-center gap-3">
           <p className="text-lg">News Per Page</p>
           <select
+            onChange={(e) => {
+              setParPage(parseInt(e.target.value));
+              setPage(1);
+            }}
+            value={parPage}
             className="outline-none border px-3 py-2 rounded-sm border-gray-200 focus:border-indigo-200"
             name=""
             id=""
           >
             <option value="5">5</option>
-            <option value="pending">10</option>
-            <option value="active">20</option>
-            <option value="deactive">30</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
           </select>
         </div>
 
         <div className="flex items-center justify-center gap-3 text-lg">
-          <p className="text-lg"> 6/22 - of 5</p>
+          <p className="text-lg">
+            {(page - 1) * parPage + 1}/ {news.length} - of {pages}
+          </p>
           <div className="flex justify-center items-center">
-            <RiArrowLeftSLine className="cursor-pointer text-2xl" />
-            <RiArrowRightSLine className="cursor-pointer text-2xl" />
+            <RiArrowLeftSLine
+              onClick={() => {
+                if (page > 1) setPage(page - 1);
+              }}
+              className="cursor-pointer text-2xl"
+            />
+            <RiArrowRightSLine
+              onClick={() => {
+                if (page < pages) setPage(page + 1);
+              }}
+              className="cursor-pointer text-2xl"
+            />
           </div>
         </div>
       </div>
