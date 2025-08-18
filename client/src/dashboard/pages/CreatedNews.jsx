@@ -311,6 +311,12 @@ const CreatedNews = () => {
         }
       );
       setLoader(false);
+
+      setTitle("");
+      setImage("");
+      setDescription("");
+      setImg("");
+
       if (!data) {
         toast.error("server error");
       } else {
@@ -495,6 +501,7 @@ const CreatedNews = () => {
 
             {/* গ্যালারিতে যুক্ত করার ইনপুট */}
             <input
+              className="hidden"
               onChange={imageHandle}
               type="file"
               name="image"

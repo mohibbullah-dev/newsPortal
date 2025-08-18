@@ -20,4 +20,14 @@ const fileUpload = async (file, options = {}) => {
   }
 };
 
-export { fileUpload };
+const deleteFile = async (publicId) => {
+  try {
+    await cloudinary.uploader.destroy(publicId, {
+      invalidate: true,
+    });
+  } catch (error) {
+    throw ApiError.serverError(error.message);
+  }
+};
+
+export { fileUpload, deleteFile };

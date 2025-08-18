@@ -12,6 +12,7 @@ import { storeContext } from "../../context/storeContext";
 import { base_url } from "../../config/config";
 import { useState } from "react";
 import { convert } from "html-to-text";
+import toast from "react-hot-toast";
 
 const NewsContent = () => {
   const [news, setAllNews] = useState([]);
@@ -68,6 +69,25 @@ const NewsContent = () => {
     }
   };
 
+  const updateStatus = async (status, newsId) => {
+    try {
+      const { data } = await axios.put(
+        `${base_url}/api/v1/update-status/${newsId}`,
+        { status },
+        {
+          headers: { Authorization: `Bearer ${store.token}` },
+        }
+      );
+
+      getNews();
+
+      console.log("status upadate: ", data);
+      toast.success("status successfully changed");
+    } catch (error) {
+      toast.error("api error");
+    }
+  };
+
   return (
     <div className=" p-4">
       <div className="flex gap-x-3">
@@ -79,7 +99,7 @@ const NewsContent = () => {
         >
           <option value="">---Select type---</option>
           <option value="pending">Pending</option>
-          <option value="published">Published</option>
+          <option value="active">Published</option>
           <option value="deactive">Deactive</option>
         </select>
         <input
@@ -103,7 +123,9 @@ const NewsContent = () => {
               <th className="text-start">description</th>
               <th className="text-start">date</th>
               <th className="text-start">status</th>
-              <th className="text-start">action</th>
+              <th className="text-start">
+                {store?.userInfo?.role === "admin" ? "view" : "aciton"}
+              </th>
             </tr>
           </thead>
 
@@ -133,24 +155,82 @@ const NewsContent = () => {
                   <td className="py-6">
                     <span>{n.date}</span>
                   </td>
+                  {store?.userInfo?.role === "admin" ? (
+                    <td className="py-6">
+                      {n.status === "pending" && (
+                        <span
+                          onClick={() => {
+                            updateStatus("active", n._id);
+                          }}
+                          className="bg-blue-500 px-[10px] py-[8px] text-white rounded-2xl"
+                        >
+                          {n.status}
+                        </span>
+                      )}
+
+                      {n.status === "active" && (
+                        <span
+                          onClick={() => {
+                            updateStatus("deactive", n._id);
+                          }}
+                          className="bg-green-500 px-[10px] py-[8px] rounded-2xl"
+                        >
+                          {n.status}
+                        </span>
+                      )}
+
+                      {n.status === "deactive" && (
+                        <span
+                          onClick={() => {
+                            updateStatus("active", n._id);
+                          }}
+                          className="bg-red-500 text-white px-[10px] py-[8px] rounded-2xl"
+                        >
+                          {n.status}
+                        </span>
+                      )}
+                    </td>
+                  ) : (
+                    <td className="py-6">
+                      {n.status === "pending" && (
+                        <span className="bg-blue-500 px-[10px] py-[8px] rounded-2xl">
+                          {n.status}
+                        </span>
+                      )}
+
+                      {n.status === "active" && (
+                        <span className="bg-green-500 px-[10px] py-[8px] rounded-2xl">
+                          {n.status}
+                        </span>
+                      )}
+
+                      {n.status === "deactive" && (
+                        <span className="bg-red-500 px-[10px] py-[8px] rounded-2xl">
+                          {n.status}
+                        </span>
+                      )}
+                    </td>
+                  )}
                   <td className="py-6">
-                    <span className="bg-green-100 px-[4px] py-[2px] rounded-2xl">
-                      {n.status}
-                    </span>
-                  </td>
-                  <td className="py-6">
-                    <Link className="bg-green-500 float-left text-white p-1.5 rounded-md hover:bg-green-600">
+                    <Link
+                      to="/dashboard/news/news-single"
+                      className="bg-green-500 float-left text-white p-1.5 rounded-md hover:bg-green-600"
+                    >
                       <IoMdEye />
                     </Link>
-                    <Link
-                      to={`/dashboard/news/edit/${n._id}`}
-                      className="bg-yellow-500 ml-3 float-left text-white p-1.5 rounded-md hover:bg-yellow-600"
-                    >
-                      <FiEdit />
-                    </Link>
-                    <Link className="bg-red-500 ml-3 float-left text-white p-1.5 rounded-md hover:bg-red-600">
-                      <MdDelete />
-                    </Link>
+                    {store?.userInfo?.role === "writer" && (
+                      <>
+                        <Link
+                          to={`/dashboard/news/edit/${n._id}`}
+                          className="bg-yellow-500 ml-3 float-left text-white p-1.5 rounded-md hover:bg-yellow-600"
+                        >
+                          <FiEdit />
+                        </Link>
+                        <Link className="bg-red-500 ml-3 float-left text-white p-1.5 rounded-md hover:bg-red-600">
+                          <MdDelete />
+                        </Link>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}

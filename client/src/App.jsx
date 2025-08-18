@@ -11,6 +11,7 @@ import News from "./dashboard/pages/News";
 import Profile from "./dashboard/pages/Profile";
 import WriterIndex from "./dashboard/pages/WriterIndex";
 import CreatedNews from "./dashboard/pages/CreatedNews";
+import EditNews from "./dashboard/pages/EditNews";
 function App() {
   const userInfo = {
     role: "admin",
@@ -33,6 +34,7 @@ function App() {
             <Route path="" element={<ProtectRolo role="writer" />}>
               <Route path="writer" element={<WriterIndex />} />
               <Route path="news/create" element={<CreatedNews />} />
+              <Route path="news/edit/:news_id" element={<EditNews />} />
             </Route>
 
             <Route path="news" element={<News />} />
