@@ -9,7 +9,7 @@ import { useContext } from "react";
 import { storeContext } from "../../context/storeContext";
 import { base_url } from "../../config/config";
 
-const CreatedNews = () => {
+const EditNews = () => {
   const [show, setShow] = useState(false);
   const [loader, setLoader] = useState(false);
   const { store } = useContext(storeContext);
@@ -271,4 +271,4 @@ const CreatedNews = () => {
   );
 };
 
-export default CreatedNews;
+export default EditNews;

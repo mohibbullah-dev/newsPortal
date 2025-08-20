@@ -12,11 +12,8 @@ import Profile from "./dashboard/pages/Profile";
 import WriterIndex from "./dashboard/pages/WriterIndex";
 import CreatedNews from "./dashboard/pages/CreatedNews";
 import EditNews from "./dashboard/pages/EditNews";
+import SingleNews from "./dashboard/pages/SingleNews";
 function App() {
-  const userInfo = {
-    role: "admin",
-  };
-
   return (
     <BrowserRouter>
       <Routes>
@@ -35,10 +32,12 @@ function App() {
               <Route path="writer" element={<WriterIndex />} />
               <Route path="news/create" element={<CreatedNews />} />
               <Route path="news/edit/:news_id" element={<EditNews />} />
+              <Route path="news/delete/:news_id" element={<News />} />
             </Route>
 
             <Route path="news" element={<News />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="news/news-single/:news_id" element={<SingleNews />} />
             <Route path="access-unable" element={<UnableToAccess />} />
           </Route>
         </Route>

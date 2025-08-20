@@ -1,5 +1,5 @@
 import profile from "../../assets/images/profile.jpg";
-import { Link, Links } from "react-router";
+import { Link, Links, useLocation, useParams } from "react-router";
 import { IoMdEye } from "react-icons/io";
 import { MdDelete, MdViewSidebar } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
@@ -21,7 +21,11 @@ const NewsContent = () => {
   const [pages, setPages] = useState(0);
   const [page, setPage] = useState(1);
 
+  const { pathname } = useLocation();
+  const { news_id } = useParams();
+
   const { store } = useContext(storeContext);
+
   const getNews = async () => {
     try {
       const { data } = await axios.get(`${base_url}/api/v1/get-all-news`, {
@@ -87,6 +91,29 @@ const NewsContent = () => {
       toast.error("api error");
     }
   };
+
+  const deleteNews = async () => {
+    try {
+      const { data } = await axios.delete(
+        `${base_url}/api/v1/delete-news/${news_id}`,
+        {
+          headers: { Authorization: `Bearer ${store.token}` },
+        }
+      );
+      toast.success("news deleted successfully");
+      console.log("hello");
+      // console.log("news deleted succefully: ", data);
+    } catch (error) {
+      console.log("server error: ", error);
+    }
+  };
+  const path = `/dashboard/news/delete/${news_id}`;
+
+  useEffect(() => {
+    if (pathname === path) {
+      deleteNews();
+    }
+  }, [pathname, path]);
 
   return (
     <div className=" p-4">
@@ -193,7 +220,7 @@ const NewsContent = () => {
                   ) : (
                     <td className="py-6">
                       {n.status === "pending" && (
-                        <span className="bg-blue-500 px-[10px] py-[8px] rounded-2xl">
+                        <span className="bg-blue-500 px-[10px] py-[8px] rounded-2xl text-white">
                           {n.status}
                         </span>
                       )}
@@ -213,7 +240,7 @@ const NewsContent = () => {
                   )}
                   <td className="py-6">
                     <Link
-                      to="/dashboard/news/news-single"
+                      to={`/dashboard/news/news-single/${n._id}`}
                       className="bg-green-500 float-left text-white p-1.5 rounded-md hover:bg-green-600"
                     >
                       <IoMdEye />
@@ -226,7 +253,10 @@ const NewsContent = () => {
                         >
                           <FiEdit />
                         </Link>
-                        <Link className="bg-red-500 ml-3 float-left text-white p-1.5 rounded-md hover:bg-red-600">
+                        <Link
+                          to={`/dashboard/news/delete/${n._id}`}
+                          className="bg-red-500 ml-3 float-left text-white p-1.5 rounded-md hover:bg-red-600"
+                        >
                           <MdDelete />
                         </Link>
                       </>

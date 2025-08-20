@@ -16,9 +16,11 @@ const newsCreate = async (req, res) => {
     if (Object.keys(files).length > 0) {
       const data = await fileUpload(files.image[0].filepath, {
         folder: "news_images",
-        public_id: title[0].trim(),
+        // public_id: title[0].trim(),
         use_filename: true,
       });
+
+      console.log("public_id: ", data);
 
       const news = await News.create({
         writerId: id,
@@ -39,7 +41,7 @@ const newsCreate = async (req, res) => {
     console.log(error);
   }
 
-  return res.status(200).json({ message: "image created successfully" });
+  return res.status(200).json({ message: "news created successfully" });
 };
 
 const newsEdit = async (req, res) => {
@@ -87,6 +89,24 @@ const newsUpdate = async (req, res) => {
 
   await news.save();
   return res.status(200).json({ message: "news updated" });
+};
+
+const deleteNews = async (req, res) => {
+  const { id } = req.userInfo;
+  const { news_id } = req.params;
+  try {
+    const data = await News.deleteOne({
+      writerId: id,
+      _id: new Types.ObjectId(news_id),
+    });
+    if (!data) {
+      return res.status(404).json({ message: "news not found" });
+    } else {
+      return res.status(200).json({ message: "deleted succefully" });
+    }
+  } catch (error) {
+    return res.status(404).json({ message: "sever error" });
+  }
 };
 
 const statusUpdate = async (req, res) => {
@@ -184,6 +204,18 @@ const addGellery = async (req, res) => {
   }
 };
 
+const singleNews = async (req, res) => {
+  const { news_id } = req.params;
+
+  try {
+    const data = await News.findById(news_id);
+    if (!data) res.status(404).json({ message: "data not found" });
+    return res.status(200).json({ message: "data fetched successfully", data });
+  } catch (error) {
+    return res.status(404).json({ message: "server error" });
+  }
+};
+
 export {
   newsCreate,
   getNews,
@@ -192,4 +224,6 @@ export {
   newsEdit,
   newsUpdate,
   statusUpdate,
+  singleNews,
+  deleteNews,
 };
