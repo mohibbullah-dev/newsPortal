@@ -13,7 +13,14 @@ import WriterIndex from "./dashboard/pages/WriterIndex";
 import CreatedNews from "./dashboard/pages/CreatedNews";
 import EditNews from "./dashboard/pages/EditNews";
 import SingleNews from "./dashboard/pages/SingleNews";
+import EditWriter from "./dashboard/pages/EditWriter";
 function App() {
+
+
+
+
+
+  
   return (
     <BrowserRouter>
       <Routes>
@@ -26,6 +33,8 @@ function App() {
               <Route path="admin" element={<AdminIndex />} />
               <Route path="writer/add" element={<AddWriter />} />
               <Route path="writers" element={<Writers />} />
+              <Route path="writer/edit/:writer_id" element={<EditWriter />} />
+              <Route path="writer/delete/:writer_id" element={<Writers />} />
             </Route>
 
             <Route path="" element={<ProtectRolo role="writer" />}>

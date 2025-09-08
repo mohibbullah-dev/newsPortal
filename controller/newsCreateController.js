@@ -4,7 +4,7 @@ import { News } from "../models/newsModel.js";
 import moment from "moment";
 import { Gellery } from "../models/gelleryImage.js";
 import { Types } from "mongoose";
-
+import { User } from "../models/authModel.js";
 const newsCreate = async (req, res) => {
   const form = formidable({});
   const { name, id, category } = req.userInfo;
@@ -33,7 +33,6 @@ const newsCreate = async (req, res) => {
         date: moment().format("LLLL"),
         count: files.image[0]._eventsCount,
       });
-      console.log("data inserted:", news);
     } else {
       console.log("image not selected");
     }
@@ -70,25 +69,35 @@ const newsUpdate = async (req, res) => {
     console.log("news not found");
     return res.status(404).json({ message: "news not found" });
   }
-
   news.title = fields.title[0];
   news.description = fields.description[0];
-  if (news.image.url !== fields.old_image[0]) {
-    news.image.url = fields.old_image[0];
-  } else {
+  await news.save();
+  // if (news.image.url === fields.old_image[0]) {
+  //   news.image.url = fields.old_image[0];
+  //   return res.status(200).json({ message: "news updated" });
+  // }
+  console.log("Object.keys(files).length", Object.keys(files).length);
+
+  if (Object.keys(files).length > 0) {
     await deleteFile(news.image.public_id);
-    const result = await fileUpload(files.new_image[0].filepath, {
+    const result = await fileUpload(files?.new_image[0].filepath, {
       folder: "news_images",
       public_id: fields.title[0].trim(),
       use_filename: true,
     });
+
     news.image.url = result.url;
     news.image.public_id = result.public_id;
     news.slug = fields.title[0].trim().split(" ").join("-");
-  }
 
-  await news.save();
-  return res.status(200).json({ message: "news updated" });
+    await news.save();
+    return res.status(200).json({ message: "news updated" });
+  } else {
+    if (news.image.url === fields.old_image[0]) {
+      news.image.url = fields.old_image[0];
+      return res.status(200).json({ message: "news updated" });
+    }
+  }
 };
 
 const deleteNews = async (req, res) => {
@@ -216,6 +225,20 @@ const singleNews = async (req, res) => {
   }
 };
 
+const me = async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const data = await User.findOne({
+      _id: new Types.ObjectId(userId),
+    });
+    if (!data)
+      return res.status(404).json({ message: "user you are not found", data });
+    return res.status(200).json({ message: "you are", data });
+  } catch (error) {
+    return res.status(404).json({ message: "server error" });
+  }
+};
+
 export {
   newsCreate,
   getNews,
@@ -226,4 +249,5 @@ export {
   statusUpdate,
   singleNews,
   deleteNews,
+  me,
 };

@@ -19,8 +19,18 @@ const authModel = new Schema(
       type: String,
       required: true,
     },
-    image: {
+
+    status: {
       type: String,
+      default: "pending",
+    },
+    image: {
+      url: {
+        type: String,
+      },
+      public_id: {
+        type: String,
+      },
     },
     category: {
       type: String,

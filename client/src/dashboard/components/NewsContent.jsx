@@ -1,7 +1,7 @@
 import profile from "../../assets/images/profile.jpg";
 import { Link, Links, useLocation, useParams } from "react-router";
 import { IoMdEye } from "react-icons/io";
-import { MdDelete, MdViewSidebar } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
 import { RiArrowLeftSLine } from "react-icons/ri";
 import { RiArrowRightSLine } from "react-icons/ri";

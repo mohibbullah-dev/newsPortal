@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import dash_logo from "../../assets/images/logo.png";
 import { RxDashboard } from "react-icons/rx";
 import { RiNewsLine } from "react-icons/ri";
@@ -8,11 +8,16 @@ import { CgProfile } from "react-icons/cg";
 import { Link, useLocation, useNavigate } from "react-router";
 import { storeContext } from "../../context/storeContext";
 import { IoMdLogOut } from "react-icons/io";
+import axios from "axios";
+import { base_url } from "../../config/config";
+import toast from "react-hot-toast";
 
 const Sidebar = () => {
   const { store, dispatch } = useContext(storeContext);
+
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const [status, setStatus] = useState("");
 
   const logoutHandler = () => {
     localStorage.removeItem("newsToken");
@@ -22,6 +27,28 @@ const Sidebar = () => {
     });
     navigate("/login");
   };
+
+  const check_writerStatus = async () => {
+    try {
+      const { data } = await axios.get(
+        `${base_url}/api/v1/me/${store.userInfo.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${store.token}`,
+          },
+        }
+      );
+      setStatus(data.data.status);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    if (pathname.includes("/dashboard")) {
+      check_writerStatus();
+    }
+  }, [pathname]);
+
   return (
     <div className="w-[250px] px-3 h-screen bg-white fixed left-0 top-0">
       <div className="h-[70px] flex justify-center items-center">
@@ -100,6 +127,13 @@ const Sidebar = () => {
             </li>{" "}
             <li>
               <Link
+                onClick={(e) => {
+                  check_writerStatus();
+                  if (status !== "active") {
+                    e.preventDefault();
+                    toast.error("please wait for admin approval");
+                  }
+                }}
                 to="/dashboard/news/create"
                 className={`px-3 ${
                   pathname === "/dashboard/news/create"

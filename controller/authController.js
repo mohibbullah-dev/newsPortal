@@ -2,6 +2,9 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/authModel.js";
 import bcrypt from "bcrypt";
 import { ACCEESS_TOKEN_EXPIRED, ACCEESS_TOKEN_SECRET } from "../constant.js";
+import formidable from "formidable";
+import { Types } from "mongoose";
+import { deleteFile, fileUpload } from "../utils/fileUpload.js";
 
 const Login = async (req, res) => {
   const { email, password } = req.body;
@@ -12,7 +15,7 @@ const Login = async (req, res) => {
 
   try {
     const user = await User.findOne({ email }).select("+password");
-
+    console.log("user of result: ", user);
     if (!user) res.status(404).json({ message: "user not found" });
     const match = await bcrypt.compare(password, user.password);
     if (match) {
@@ -21,6 +24,7 @@ const Login = async (req, res) => {
         name: user.name,
         category: user.category,
         role: user.role,
+        status: user.status,
       };
 
       const token = await jwt.sign(obj, ACCEESS_TOKEN_SECRET, {
@@ -37,5 +41,37 @@ const Login = async (req, res) => {
     console.log(error);
   }
 };
+const ProfileUpdate = async (req, res) => {
+  const { profile_id } = req.params;
+  console.log("profile_id: ", profile_id);
+  const form = formidable({});
+  const [fields, files] = await form.parse(req);
+  const data = await User.findById(profile_id);
+  if (!data) return res.status(404).json({ message: "user not found", data });
+  data.name = fields?.name?.[0];
+  data.email = fields?.email?.[0];
+  await data.save();
 
-export { Login };
+  if (Object.keys(files).length > 0) {
+    if (data.image.public_id) {
+      await deleteFile(data.image.public_id);
+    }
+    const result = await fileUpload(files?.newImage[0].filepath, {
+      folder: "avator",
+      public_id: fields.name[0].trim(),
+      use_filename: true,
+    });
+    console.log("result: ", result);
+    data.image.url = result?.url;
+    data.public_id = result?.public_id;
+    await data.save();
+  } else {
+  }
+
+  return res.status(200).json({ message: "profile updated", data });
+
+  console.log("fields:1 ", fields.name[0]);
+  console.log("files:1 ", files?.newImage[0].filepath);
+};
+
+export { Login, ProfileUpdate };

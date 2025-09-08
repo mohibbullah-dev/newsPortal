@@ -8,6 +8,7 @@ const StorePorver = ({ children }) => {
     userInfo: decodeTOken(localStorage.getItem("newsToken") || null),
     token: localStorage.getItem("newsToken") || "",
   });
+  console.log("context store value", store);
   return (
     <storeContext.Provider value={{ store, dispatch }}>
       {children}
