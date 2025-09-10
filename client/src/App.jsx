@@ -14,22 +14,26 @@ import CreatedNews from "./dashboard/pages/CreatedNews";
 import EditNews from "./dashboard/pages/EditNews";
 import SingleNews from "./dashboard/pages/SingleNews";
 import EditWriter from "./dashboard/pages/EditWriter";
+import { useContext } from "react";
+import { storeContext } from "./context/storeContext";
 function App() {
+  const { store } = useContext(storeContext);
 
-
-
-
-
-  
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<ProjectDashboard />}>
           <Route path="" element={<MainLayout />}>
-            <Route path="" element={<Navigate to="/dashboard/admin" />} />
+            {/* <Route path="" element={<Navigate to="/dashboard/" />} /> */}
 
-            <Route path="" element={<ProtectRolo role="admin" />}>
+            {store.userInfo?.role === "admin" ? (
+              <Route path="" element={<Navigate to="/dashboard/admin" />} />
+            ) : (
+              <Route path="" element={<Navigate to="/dashboard/writer" />} />
+            )}
+
+            <Route path="" element={<ProtectRolo />}>
               <Route path="admin" element={<AdminIndex />} />
               <Route path="writer/add" element={<AddWriter />} />
               <Route path="writers" element={<Writers />} />
@@ -37,7 +41,7 @@ function App() {
               <Route path="writer/delete/:writer_id" element={<Writers />} />
             </Route>
 
-            <Route path="" element={<ProtectRolo role="writer" />}>
+            <Route path="" element={<ProtectRolo />}>
               <Route path="writer" element={<WriterIndex />} />
               <Route path="news/create" element={<CreatedNews />} />
               <Route path="news/edit/:news_id" element={<EditNews />} />

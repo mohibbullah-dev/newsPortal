@@ -1,5 +1,9 @@
 import e, { Router } from "express";
-import { Login, ProfileUpdate } from "../controller/authController.js";
+import {
+  Login,
+  prof_passwor_reset,
+  ProfileUpdate,
+} from "../controller/authController.js";
 import {
   AddWriter,
   AllWriters,
@@ -43,5 +47,11 @@ router.get(
 );
 
 router.put("/profileUpade/:profile_id", authMiddleware, ProfileUpdate);
+
+router.put(
+  "/prof_pass_reset/:reset_pass_id",
+  authMiddleware,
+  prof_passwor_reset
+);
 
 export default router;

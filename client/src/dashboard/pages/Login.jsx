@@ -18,9 +18,11 @@ const Login = () => {
 
   const submit = async (e) => {
     e.preventDefault();
+
     try {
       setLoader(true);
       const { data } = await axios.post(`${base_url}/api/v1/login`, state);
+
       setLoader(false);
       localStorage.setItem("newsToken", data.token);
       toas.success(data.message);
@@ -33,7 +35,7 @@ const Login = () => {
       navigate("/dashboard");
     } catch (error) {
       setLoader(false);
-      toas.error(error.response.data.message);
+      toas.error(error?.response?.data?.message);
     }
   };
 

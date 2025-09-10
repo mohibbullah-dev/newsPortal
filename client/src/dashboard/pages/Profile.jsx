@@ -10,7 +10,6 @@ import { useEffect } from "react";
 import { TbEdit } from "react-icons/tb";
 import { FiSave } from "react-icons/fi";
 import toast from "react-hot-toast";
-toast;
 
 const Profile = () => {
   const { store, dispatch } = useContext(storeContext);
@@ -25,6 +24,11 @@ const Profile = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [pass_reset, setPass_reset] = useState({
+    old_password: "",
+    new_password: "",
+  });
 
   const Me = async () => {
     try {
@@ -87,6 +91,30 @@ const Profile = () => {
       setLoading(false);
 
       toast.error(error?.response?.data?.message || "Error");
+    }
+  };
+
+  const pass_handler = (e) => {
+    setPass_reset({ ...pass_reset, [e.target.name]: e.target.value });
+    console.log("pass_reset", pass_reset);
+  };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const { data } = await axios.put(
+        `${base_url}/api/v1/prof_pass_reset/${store.userInfo.id}`,
+        pass_reset,
+        {
+          headers: { Authorization: `Bearer ${store.token}` },
+        }
+      );
+      setLoading(false);
+      toast.success("password resetted successfullay");
+    } catch (error) {
+      toast.error(error.response.data.message);
+      setLoading(false);
     }
   };
 
@@ -195,35 +223,40 @@ const Profile = () => {
         <form className="flex flex-col gap-4 w-full p-5" action="">
           <div className="grid gap-4">
             <div className="flex min-w-full flex-col items-start gap-1">
-              <label className="text-xl text-gray-500" htmlFor="oldpassword">
+              <label className="text-xl text-gray-500" htmlFor="old_password">
                 Old password
               </label>
               <input
+                onChange={pass_handler}
                 className="outline-none border min-w-full px-3 py-2 rounded-sm border-gray-200 focus:border-indigo-200"
-                type="text"
-                name="oldpassword"
-                id="oldpassword"
+                type="password"
+                name="old_password"
+                id="old_password"
                 placeholder="Old-password"
               />
             </div>
             <div className="flex flex-col items-start gap-1">
-              <label className="text-xl text-gray-500" htmlFor="newpassword">
+              <label className="text-xl text-gray-500" htmlFor="new_password">
                 New password
               </label>
               <input
+                onChange={pass_handler}
                 className="outline-none border w-full px-3 py-2 rounded-sm border-gray-200 focus:border-indigo-200"
-                type="newpassword"
-                name="newpassword"
-                id="newpassword"
+                type="password"
+                name="new_password"
+                id="new_password"
                 placeholder="New-password"
               />
             </div>
           </div>
 
           <div>
-            <Link className="text-xl py-1.5 bg-indigo-500 hover:bg-indigo-600 px-2 rounded-md text-white">
-              Change password
-            </Link>
+            <button
+              onClick={submit}
+              className="text-xl py-1.5 bg-indigo-500 hover:bg-indigo-600 px-2 rounded-md text-white"
+            >
+              {loading ? "Reseting..." : "Reset"}
+            </button>
           </div>
         </form>
       </div>

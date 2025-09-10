@@ -25,7 +25,6 @@ const AdminIndex = () => {
       const { data } = await axios.get(`${base_url}/api/v1/get-all-news`, {
         headers: { Authorization: `Bearer ${store.token}` },
       });
-      console.log(data.data);
 
       const pending_news = data.data.filter((n, i) => n.status === "pending");
       if (pending_news < 0) {
@@ -49,7 +48,6 @@ const AdminIndex = () => {
       }
 
       if (data.data.length < 0) {
-        console.log("data not found", data.data);
       } else {
         setTotal_news(data.data);
         if (state === true) {
@@ -105,7 +103,6 @@ const AdminIndex = () => {
         toast.error("status not updated");
       } else {
         toast.success(`status updated sccessfully`);
-        console.log("status updated sccessfully", data);
       }
 
       getNews();
@@ -147,7 +144,6 @@ const AdminIndex = () => {
           <span
             onClick={() => {
               setState(true);
-              console.log("clicked");
             }}
             className="text-xl font-semibold cursor-pointer"
           >
@@ -185,7 +181,7 @@ const AdminIndex = () => {
                     <span className="capitalize">{n.category}</span>
                   </td>
                   <td className="py-6">
-                    <span>{convert(n.description.slice(0.2))}</span>
+                    <span>{convert(n.description.slice(0, 50))} ...</span>
                   </td>
                   <td className="py-6">
                     <span>{n.date}</span>
